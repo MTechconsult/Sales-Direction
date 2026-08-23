@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sales Direction Playbook — Interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-light:#16305A;
+    --navy-pale:#1F3A63;
+    --gold:#C9A227;
+    --gold-light:#E8CD73;
+    --cream:#FAF7EF;
+    --paper:#FFFFFF;
+    --ink:#1C1C1C;
+    --grey:#6B6B6B;
+    --rule:#E4DCC3;
+    --sidebar-w:300px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold-light);}
+
+  /* ---------- Layout shell ---------- */
+  .shell{display:flex;min-height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--navy);
+    color:#fff;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    overflow-y:auto;
+    z-index:40;
+    transition:transform .28s ease;
+  }
+  .sidebar::-webkit-scrollbar{width:8px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--navy-pale);border-radius:4px;}
+
+  .brand{
+    padding:28px 24px 20px;
+    border-bottom:1px solid rgba(201,162,39,0.35);
+  }
+  .brand .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.14em;
+    color:var(--gold-light);
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .brand h1{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    font-weight:600;
+    line-height:1.25;
+    margin:0 0 10px;
+  }
+  .brand .meta{
+    font-size:12px;
+    color:rgba(255,255,255,0.65);
+    line-height:1.6;
+  }
+  .brand .meta strong{color:var(--gold-light);font-weight:600;}
+
+  nav.toc{padding:14px 10px 40px;}
+  .part-group{margin-bottom:6px;}
+  .part-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.09em;
+    text-transform:uppercase;
+    color:var(--gold);
+    padding:14px 14px 6px;
+  }
+  .toc-item{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    color:rgba(255,255,255,0.82);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    line-height:1.35;
+    padding:8px 14px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .toc-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+  .toc-item.active{background:var(--navy-pale);color:#fff;box-shadow:inset 3px 0 0 var(--gold);}
+  .toc-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--gold-light);
+    flex-shrink:0;
+    width:20px;
+  }
+
+  /* ---------- Main content ---------- */
+  .main{
+    margin-left:var(--sidebar-w);
+    flex:1;
+    min-width:0;
+    padding:0 0 120px;
+  }
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(250,247,239,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+    padding:14px 44px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .breadcrumb{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--grey);
+    letter-spacing:0.04em;
+  }
+  .breadcrumb b{color:var(--navy);}
+  .nav-arrows{display:flex;gap:8px;}
+  .arrow-btn{
+    border:1px solid var(--rule);
+    background:var(--paper);
+    color:var(--navy);
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:600;
+    padding:7px 13px;
+    border-radius:7px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:6px;
+  }
+  .arrow-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .arrow-btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .menu-btn{display:none;}
+
+  .page-wrap{max-width:740px;margin:0 auto;padding:44px 44px 0;}
+
+  .page-header{margin-bottom:8px;}
+  .page-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .page-title{
+    font-family:'Fraunces',serif;
+    font-size:34px;
+    font-weight:600;
+    color:var(--navy);
+    line-height:1.15;
+    margin:6px 0 18px;
+  }
+  .gold-rule{height:1px;background:linear-gradient(90deg,var(--gold) 0%, var(--rule) 45%, transparent 100%);margin-bottom:28px;}
+
+  .copy-all-row{
+    display:flex;justify-content:flex-end;margin:-6px 0 22px;
+  }
+  .copy-page-btn{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--navy);
+    background:var(--gold-light);
+    border:1px solid var(--gold);
+    padding:8px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:7px;
+  }
+  .copy-page-btn:hover{background:var(--gold);}
+  .copy-page-btn.copied{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  /* content blocks */
+  .block-h{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--navy);margin:26px 0 10px;}
+  .block-p{font-size:15px;line-height:1.7;color:#2a2a2a;margin:0 0 14px;}
+  .block-quote{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:16px;
+    color:var(--navy-light);
+    border-left:2.5px solid var(--gold);
+    padding-left:16px;
+    margin:0 0 12px;
+    line-height:1.55;
+  }
+  .block-flow{
+    text-align:center;
+    font-weight:600;
+    color:var(--navy);
+    font-size:14.5px;
+    padding:14px 10px;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    margin:18px 0;
+  }
+  .stage{margin-bottom:12px;}
+  .stage-label{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:var(--gold);font-weight:600;margin-bottom:2px;}
+  .stage-text{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--navy);padding-left:8px;}
+
+  ul.block-list, ol.block-list{margin:0 0 16px;padding-left:22px;}
+  ul.block-list li, ol.block-list li{font-size:15px;line-height:1.65;margin-bottom:6px;color:#2a2a2a;}
+  ul.checklist{list-style:none;padding-left:2px;margin:0 0 16px;}
+  ul.checklist li{font-size:15px;line-height:1.7;margin-bottom:7px;color:#2a2a2a;padding-left:26px;position:relative;}
+  ul.checklist li::before{content:"\2610";position:absolute;left:0;color:var(--gold);font-size:15px;top:0;}
+
+  .labelpara{margin-bottom:14px;}
+  .labelpara-label{font-weight:700;color:var(--navy);font-size:15px;margin-bottom:2px;}
+  .labelpara-text{font-size:14.5px;line-height:1.65;color:#333;white-space:pre-line;}
+
+  .section-label{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.09em;
+    font-weight:600;
+    color:#fff;
+    background:var(--navy);
+    padding:6px 12px;
+    border-radius:5px;
+    margin:22px 0 12px;
+  }
+
+  .copy-block{
+    position:relative;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+  .copy-block .quote-line{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:15px;
+    color:var(--navy-light);
+    line-height:1.5;
+    padding-right:78px;
+  }
+  .copy-block .post-title{font-weight:700;color:var(--navy);font-size:15px;margin-bottom:8px;}
+  .copy-block .post-body{font-size:14.5px;line-height:1.7;white-space:pre-line;color:#262626;padding-right:0;}
+  .copy-block .cta-text{
+    font-family:'Fraunces',serif;font-style:italic;font-size:16px;color:var(--navy);padding-right:78px;
+  }
+
+  .copy-btn{
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--navy);
+    background:var(--cream);
+    border:1px solid var(--rule);
+    padding:6px 12px;
+    border-radius:16px;
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .copy-btn:hover{border-color:var(--gold);background:var(--gold-light);}
+  .copy-btn.copied{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .copy-block-inline-btn{position:absolute;top:14px;right:14px;}
+  .copy-block-bottom-btn{margin-top:10px;}
+
+  .quote-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+
+  footer.page-footer{
+    max-width:740px;margin:40px auto 0;padding:24px 44px 0;
+    border-top:1px solid var(--rule);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .footer-tagline{font-size:11px;color:var(--grey);font-style:italic;max-width:420px;line-height:1.5;}
+
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--navy);color:#fff;font-size:13px;font-weight:600;
+    padding:11px 20px;border-radius:24px;
+    box-shadow:0 8px 24px rgba(11,31,58,0.35);
+    opacity:0;pointer-events:none;
+    transition:all .25s ease;
+    z-index:100;
+    display:flex;align-items:center;gap:8px;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .dot{width:6px;height:6px;border-radius:50%;background:var(--gold-light);}
+
+  /* mobile */
+  .overlay{display:none;}
+  @media (max-width:920px){
+    .sidebar{transform:translateX(-100%);width:86%;max-width:340px;}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;}
+    .menu-btn{
+      display:flex;align-items:center;gap:8px;
+      background:var(--navy);color:#fff;border:none;
+      padding:8px 14px;border-radius:7px;font-family:'Inter',sans-serif;
+      font-size:12.5px;font-weight:600;cursor:pointer;
+    }
+    .topbar{padding:12px 18px;}
+    .page-wrap{padding:28px 20px 0;}
+    footer.page-footer{padding:20px 20px 0;flex-direction:column;align-items:flex-start;gap:10px;}
+    .overlay{
+      display:block;position:fixed;inset:0;background:rgba(11,31,58,0.5);
+      z-index:30;opacity:0;pointer-events:none;transition:opacity .25s ease;
+    }
+    .overlay.show{opacity:1;pointer-events:auto;}
+    .breadcrumb{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="eyebrow">MTech Concept Solutions</div>
+      <h1 id="brandTitle">The Sales Direction Playbook</h1>
+      <div class="meta"><strong>Interactive edition</strong> — tap Copy on any block to paste it straight into your DMs or scheduler.</div>
+    </div>
+    <nav class="toc" id="tocNav"></nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-btn" id="menuBtn">&#9776; Contents</button>
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="nav-arrows">
+        <button class="arrow-btn" id="prevBtn">&larr; Prev</button>
+        <button class="arrow-btn" id="nextBtn">Next &rarr;</button>
+      </div>
+    </div>
+
+    <div class="page-wrap" id="pageWrap"></div>
+
+    <footer class="page-footer">
+      <div class="footer-tagline">Architecting Growth for Professionals and Businesses Through Strategy, Positioning, and Opportunity.</div>
+      <div class="footer-tagline" style="text-align:right;">© 2026 MTech Concept Solutions</div>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toastText">Copied to clipboard</span></div>
+
+<script id="playbook-data" type="application/json">{"meta": {"title": "THE SALES DIRECTION PLAYBOOK", "subtitle": "A Practical Problem\u2013Solution Marketing System for Affiliate Marketers & Digital Marketers", "tagline": "What to Post \u2022 What to Say \u2022 What to Sell \u2022 How to Follow Up \u2022 How to Stay Consistent", "brand": "MTech Concept Solutions", "footer_tagline": "Architecting Growth for Professionals and Businesses Through Strategy, Positioning, and Opportunity."}, "copyright": ["\u00a9 2026 MTech Concept Solutions. All rights reserved.", "This guide is created for educational and practical marketing purposes.", "It does not guarantee income, sales, customers, academic results, relationship outcomes, financial success, or fitness results. Results depend on individual circumstances, consistency, execution, market demand, product quality and other factors.", "Affiliate marketers should promote products honestly and disclose affiliate relationships where appropriate.", "Do not make false claims, fake testimonials, unrealistic income promises, misleading health claims, or guarantees of results.", "For the relationship-related section, the content is intentionally written around responsible partner selection, values, character, compatibility and healthy marriage, while avoiding content that promotes prohibited relationships or conduct."], "toc": [{"part": "PART ONE \u2014 THE SYSTEM", "entries": [{"page": 1, "title": "Introduction"}, {"page": 2, "title": "How This Playbook Works"}, {"page": 3, "title": "The Problem\u2013Solution Method"}, {"page": 4, "title": "Affiliate Marketing vs Digital Marketing"}, {"page": 5, "title": "How to Use the Copy-and-Paste Templates"}]}, {"part": "PART TWO \u2014 THE SIX PROBLEM-BASED PRODUCTS", "entries": [{"page": 6, "title": "Why Am I Always Broke?"}, {"page": 7, "title": "Marketing Templates \u2014 Why Am I Always Broke?"}, {"page": 8, "title": "Sales & DM System"}, {"page": 9, "title": "Why Can't I Stop Scrolling?"}, {"page": 10, "title": "Marketing Templates \u2014 Why Can't I Stop Scrolling?"}, {"page": 11, "title": "Sales & DM System"}, {"page": 12, "title": "Why Can't I Speak Well?"}, {"page": 13, "title": "Marketing Templates \u2014 Why Can't I Speak Well?"}, {"page": 14, "title": "Sales & DM System"}, {"page": 15, "title": "Why Is My CGPA Not Improving?"}, {"page": 16, "title": "Marketing Templates \u2014 Why Is My CGPA Not Improving?"}, {"page": 17, "title": "Sales & DM System"}, {"page": 18, "title": "Why Do I Keep Choosing the Wrong People?"}, {"page": 19, "title": "Marketing Templates \u2014 The Relationship Guide"}, {"page": 20, "title": "Sales & DM System"}, {"page": 21, "title": "Why Am I Still Out of Shape?"}, {"page": 22, "title": "Marketing Templates \u2014 Why Am I Still Out of Shape?"}, {"page": 23, "title": "Sales & DM System"}]}, {"part": "PART THREE \u2014 THE MARKETING ENGINE", "entries": [{"page": 24, "title": "The Content System"}, {"page": 25, "title": "Copy-and-Paste Hook Bank"}, {"page": 26, "title": "Universal Sales Templates"}, {"page": 27, "title": "DM & Objection Handling"}, {"page": 28, "title": "Follow-Up System"}, {"page": 29, "title": "Simple Sales Funnel"}, {"page": 30, "title": "30-Day Marketing Plan"}, {"page": 31, "title": "Daily & Weekly Checklists"}, {"page": 32, "title": "Final Action Plan"}]}], "pages": [{"num": 1, "part": "PART ONE", "title": "Introduction", "blocks": [{"type": "h", "text": "Stop Asking \u201cWhat Should I Post?\u201d"}, {"type": "p", "text": "One of the biggest challenges for a beginner in affiliate marketing or digital marketing is not necessarily a lack of products."}, {"type": "p", "text": "It is a lack of direction."}, {"type": "p", "text": "You may have an affiliate link. You may have a digital product. You may have social media accounts. You may even know that you should create content."}, {"type": "p", "text": "But when you open your phone to post, you suddenly ask:"}, {"type": "quote", "text": "\u201cWhat should I say?\u201d"}, {"type": "p", "text": "Then you post something random. Maybe it gets a few likes. Maybe nobody responds. The next day, you don't know what to post again. This cycle can continue for weeks."}, {"type": "p", "text": "The solution is to stop thinking only about products and start thinking about problems."}, {"type": "p", "text": "People have problems every day. Someone is struggling with money. Someone is spending too much time scrolling. Someone wants to communicate better. A student is struggling academically. Someone is making poor decisions when choosing a life partner. Someone wants to improve their physical fitness."}, {"type": "p", "text": "These problems create opportunities for useful products and services. That is the foundation of this playbook."}]}, {"num": 2, "part": "PART ONE", "title": "How This Playbook Works", "blocks": [{"type": "p", "text": "This playbook is built around six problem-based digital products:"}, {"type": "numbered", "items": ["Why Am I Always Broke? \u2014 For people who want to understand their financial habits and improve their financial direction.", "Why Can't I Stop Scrolling? \u2014 For people who want to reduce unnecessary scrolling and regain control of their attention.", "Why Can't I Speak Well? \u2014 For people who want to improve their communication and speaking ability.", "Why Is My CGPA Not Improving? \u2014 For students who want to improve their study habits and academic approach.", "Why Do I Keep Choosing the Wrong People? \u2014 For people who want to make wiser decisions when choosing a suitable life partner and build healthier marriages.", "Why Am I Still Out of Shape? \u2014 For people who want to build healthier and more consistent fitness habits."]}, {"type": "p", "text": "The important thing is that you do not need to invent a completely new marketing strategy for every product."}, {"type": "p", "text": "The same basic system can be used:"}, {"type": "flow", "text": "Problem \u2192 Awareness \u2192 Education \u2192 Solution \u2192 CTA \u2192 Conversation \u2192 Follow-Up \u2192 Sale"}]}, {"num": 3, "part": "PART ONE", "title": "The Problem\u2013Solution Method", "blocks": [{"type": "h", "text": "Why People Buy"}, {"type": "p", "text": "Most people don't wake up thinking:"}, {"type": "quote", "text": "\u201cI want to buy a digital product today.\u201d"}, {"type": "p", "text": "They think about problems. For example:"}, {"type": "quotelist", "items": ["\u201cWhere did my money go?\u201d", "\u201cWhy can't I stop using my phone?\u201d", "\u201cWhy can't I express myself?\u201d", "\u201cWhy is my CGPA still low?\u201d", "\u201cWhy do I keep making the same mistakes when choosing a spouse?\u201d", "\u201cWhy can't I stay consistent with fitness?\u201d"]}, {"type": "p", "text": "This is why problem-based marketing is powerful. Your content should help people move through four stages."}, {"type": "stage", "label": "STAGE 1 \u2014 RECOGNITION", "text": "\u201cThis is my problem.\u201d"}, {"type": "stage", "label": "STAGE 2 \u2014 UNDERSTANDING", "text": "\u201cNow I understand why it may be happening.\u201d"}, {"type": "stage", "label": "STAGE 3 \u2014 POSSIBILITY", "text": "\u201cMaybe there is a better way.\u201d"}, {"type": "stage", "label": "STAGE 4 \u2014 ACTION", "text": "\u201cI want to explore the solution.\u201d"}, {"type": "p", "text": "That is where your product becomes relevant."}]}, {"num": 4, "part": "PART ONE", "title": "Affiliate Marketing vs Digital Marketing", "blocks": [{"type": "h", "text": "Affiliate Marketing"}, {"type": "p", "text": "Affiliate marketing involves promoting another company's or creator's product or service through an affiliate arrangement and earning a commission when a qualifying action occurs."}, {"type": "p", "text": "Your basic job is:"}, {"type": "flow", "text": "Find the right audience \u2192 create useful content \u2192 recommend a relevant product \u2192 help the prospect make an informed decision."}, {"type": "p", "text": "Your affiliate link is not your entire marketing strategy. It is the destination of the sales process."}, {"type": "h", "text": "Digital Marketing"}, {"type": "p", "text": "Digital marketing is broader. It involves using digital channels to promote a business, product, service or personal brand."}, {"type": "p", "text": "It can involve:"}, {"type": "bullets", "items": ["Social media", "Content marketing", "Email", "Websites", "Landing pages", "Search", "Online communities", "Messaging", "Advertising", "Analytics"]}, {"type": "p", "text": "The principles remain similar:"}, {"type": "flow", "text": "Attract \u2192 Educate \u2192 Build Trust \u2192 Convert \u2192 Retain"}]}, {"num": 5, "part": "PART ONE", "title": "How to Use the Copy-and-Paste Templates", "blocks": [{"type": "p", "text": "The templates in this playbook are designed to save you time."}, {"type": "p", "text": "You can: Copy \u2192 Replace \u2192 Customize \u2192 Publish."}, {"type": "p", "text": "For example:"}, {"type": "quote", "text": "\u201cIf you are struggling with [PROBLEM], here's something you need to understand.\u201d"}, {"type": "p", "text": "Replace [PROBLEM] with:"}, {"type": "quote", "text": "\u201cmanaging your money\u201d"}, {"type": "p", "text": "or:"}, {"type": "quote", "text": "\u201ccontrolling your screen time.\u201d"}, {"type": "p", "text": "But don't simply copy everything forever. Use the templates to learn the structure. Eventually, you should become comfortable creating your own content."}, {"type": "p", "text": "Your job every day:"}, {"type": "numbered", "items": ["Choose a problem.", "Choose a content angle.", "Copy a suitable template.", "Customize it.", "Publish.", "Respond to people.", "Follow up.", "Track the result."]}]}, {"num": 6, "part": "PART TWO", "title": "Why Am I Always Broke?", "product": "broke", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "Financial difficulty can have many causes. Sometimes income is genuinely insufficient. Sometimes the problem is spending. Sometimes it is a combination of both."}, {"type": "p", "text": "Someone may earn money but have no clear plan for managing it. Another person may have useful skills but never develop them enough to increase their earning potential. Another may constantly spend because of pressure from friends, social media or lifestyle expectations."}, {"type": "p", "text": "The purpose of this product is not to tell people:"}, {"type": "quote", "text": "\u201cYou are broke because you are irresponsible.\u201d"}, {"type": "p", "text": "That would be too simplistic. The goal is to help people ask better questions."}, {"type": "p", "text": "Questions to ask:"}, {"type": "bullets", "items": ["Where does my money go?", "What do I spend unnecessarily?", "Do I have financial goals?", "Do I save?", "Do I budget?", "What skills can I develop?", "Do I have more than one legitimate income opportunity?", "What financial habits keep repeating?"]}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "The solution begins with awareness. You cannot improve a financial pattern you have never examined."}, {"type": "p", "text": "The guide can help the reader:"}, {"type": "bullets", "items": ["Understand financial habits", "Identify unnecessary spending", "Create better financial routines", "Think about income development", "Set realistic goals", "Become more intentional with money"]}]}, {"num": 7, "part": "PART TWO", "title": "Marketing Templates \u2014 Why Am I Always Broke?", "product": "broke", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["Why are you always broke even when money enters your account?", "Your financial problem may not only be how much you earn.", "Money came in yesterday. Where is it today?", "If you don't know where your money goes, controlling it becomes difficult.", "Being broke isn't always an income problem. Sometimes it's a management problem."]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Am I Always Broke?", "body": "Have you ever received money and told yourself:\n\n\u201cThis time, I will manage it properly.\u201d\n\nThen a few days later, you're wondering where everything went?\n\nStart by examining your habits.\n\nAsk yourself:\n\n\u2022 Do I have a spending plan?\n\u2022 Do I track my expenses?\n\u2022 Do I save consistently?\n\u2022 Do I buy things because I need them or because I want them immediately?\n\u2022 Am I developing skills that can improve my earning potential?\n\nYou cannot change a pattern you refuse to examine.\n\nStart with awareness.\n\nIf you want a practical guide for examining these patterns, check out Why Am I Always Broke?\n\n[LINK]"}, {"type": "label", "text": "SHORT POST"}, {"type": "post", "title": null, "body": "Your salary isn't necessarily disappearing by itself.\n\nSometimes small spending habits quietly add up.\n\nTrack your money. Understand your habits. Create a plan. Improve gradually.\n\nWhy Am I Always Broke?\n\n[LINK]"}]}, {"num": 8, "part": "PART TWO", "title": "Sales & DM System", "product": "broke", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "If money keeps disappearing from your hands, don't only ask how to earn more.\n\nAsk how you are currently managing what you earn.\n\nWhy Am I Always Broke? helps you examine:\n\n\u2713 Spending habits\n\u2713 Financial discipline\n\u2713 Money management\n\u2713 Income development\n\u2713 Better financial decision-making\n\nIf you want a structured guide to help you examine your current financial pattern:\n\nGet it here: [LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cBROKE\u201d and I'll send you the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "Hi [NAME], thanks for your interest in Why Am I Always Broke?\n\nThe guide is designed to help you understand your financial habits and develop a more intentional approach to managing money.\n\nWhat financial challenge are you currently trying to solve?"}, {"type": "label", "text": "FOLLOW-UP"}, {"type": "post", "title": null, "body": "Hi [NAME], just checking in about the financial guide I sent earlier.\n\nWere you able to review the information?"}]}, {"num": 9, "part": "PART TWO", "title": "Why Can't I Stop Scrolling?", "product": "scrolling", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "The smartphone is a useful tool. It can help you learn, work, communicate, create, research, and access opportunities."}, {"type": "p", "text": "But the same device can also consume enormous amounts of attention. You may open an app for five minutes and remain there for an hour. You may repeatedly check notifications. You may scroll whenever you feel bored. You may intend to study but find yourself watching videos instead."}, {"type": "p", "text": "The problem is not necessarily that smartphones are bad. The problem can be unintentional use."}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "The goal is not:"}, {"type": "quote", "text": "\u201cNever use your phone.\u201d"}, {"type": "p", "text": "The goal is:"}, {"type": "quote", "text": "Use your phone intentionally."}, {"type": "p", "text": "Start by identifying:"}, {"type": "bullets", "items": ["When you scroll", "Why you scroll", "Which apps consume the most time", "What triggers the habit", "What activities you are avoiding"]}, {"type": "p", "text": "Then introduce practical boundaries."}]}, {"num": 10, "part": "PART TWO", "title": "Marketing Templates \u2014 Why Can't I Stop Scrolling?", "product": "scrolling", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["You picked up your phone for five minutes. Two hours later, you're still scrolling.", "How many hours of your day disappear into scrolling?", "Why do you keep saying, \u201cOne more video\u201d?", "Your phone should be a tool, not the manager of your attention.", "What would you do with two extra hours every day?"]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Can't I Stop Scrolling?", "body": "You tell yourself:\n\n\u201cI'll just check my phone for five minutes.\u201d\n\nThen you look at the time.\n\nOne hour has disappeared.\n\nStart by asking yourself:\n\n\u2022 When do I scroll the most?\n\u2022 What usually triggers it?\n\u2022 Which apps take most of my time?\n\u2022 Am I scrolling because I'm bored?\n\u2022 Am I avoiding something?\n\nAwareness is the first step. You cannot change a habit you haven't identified.\n\nWhy Can't I Stop Scrolling? gives you a practical framework for understanding and managing your digital habits.\n\n[LINK]"}]}, {"num": 11, "part": "PART TWO", "title": "Sales & DM System", "product": "scrolling", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "Your phone is powerful.\n\nYou can use it to learn, create, work and build opportunities.\n\nBut if you spend most of your time mindlessly scrolling, you may be losing hours that could be used for something more meaningful.\n\nWhy Can't I Stop Scrolling? helps you examine your digital habits and build a more intentional relationship with your phone.\n\nIf you're ready to take your attention seriously:\n\n[LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cSCROLL\u201d for the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "Hi [NAME].\n\nThanks for your interest.\n\nWhat is your biggest challenge right now:\n\nA. Spending too much time scrolling\nB. Checking the phone constantly\nC. Difficulty focusing\nD. All of the above?\n\nThen continue based on the answer."}]}, {"num": 12, "part": "PART TWO", "title": "Why Can't I Speak Well?", "product": "speak", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "Communication is a skill. Some people know what they want to say but cannot organize their thoughts. Others become nervous. Some speak too quickly. Some worry about making mistakes. Others believe they must use complicated words to sound intelligent."}, {"type": "p", "text": "But effective communication is not about using the biggest vocabulary. It is about being:"}, {"type": "bullets", "items": ["Clear", "Understandable", "Organized", "Confident", "Appropriate for the situation"]}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "Improving communication requires practice. The reader can work on:"}, {"type": "bullets", "items": ["Vocabulary", "Pronunciation", "Listening", "Thought organization", "Speaking exercises", "Reading", "Conversation practice", "Confidence"]}, {"type": "p", "text": "The goal isn't perfection. The goal is progress."}]}, {"num": 13, "part": "PART TWO", "title": "Marketing Templates \u2014 Why Can't I Speak Well?", "product": "speak", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["You know what you want to say, but you can't express it properly.", "Good ideas become less useful when you cannot communicate them clearly.", "You don't need big words to speak well.", "Speaking confidently is a skill.", "Why do you suddenly forget your words when people start listening?"]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Can't I Speak Well?", "body": "Have you ever prepared what you wanted to say, then struggled when it was time to speak?\n\nStart with the basics.\n\n\u2713 Organize your thoughts.\n\u2713 Practice speaking.\n\u2713 Read regularly.\n\u2713 Listen carefully.\n\u2713 Learn useful vocabulary.\n\u2713 Don't be afraid of making mistakes.\n\nThe goal isn't to sound perfect. The goal is to communicate clearly.\n\nWhy Can't I Speak Well? provides practical guidance and exercises for improving communication.\n\n[LINK]"}]}, {"num": 14, "part": "PART TWO", "title": "Sales & DM System", "product": "speak", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "Imagine having an idea but struggling to explain it.\n\nImagine knowing the answer but becoming nervous when asked to speak.\n\nCommunication affects school, work, business and everyday life.\n\nWhy Can't I Speak Well? helps you work on practical communication habits so you can become clearer and more confident over time.\n\nGet the guide: [LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cSPEAK\u201d for the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "What would you most like to improve:\n\n1. Speaking confidence\n2. Vocabulary\n3. Organizing thoughts\n4. General communication?\n\nThen recommend the guide appropriately."}]}, {"num": 15, "part": "PART TWO", "title": "Why Is My CGPA Not Improving?", "product": "cgpa", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "A student may spend hours reading and still see poor results. That can be frustrating. But studying longer does not automatically mean studying better."}, {"type": "p", "text": "A student may need to examine:"}, {"type": "bullets", "items": ["Study technique", "Time management", "Revision", "Concentration", "Practice", "Understanding", "Examination strategy", "Previous mistakes"]}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "A better academic system can include:"}, {"type": "labelpara", "label": "Active learning", "text": "Don't only read. Try to explain what you learned."}, {"type": "labelpara", "label": "Practice", "text": "Use questions and exercises."}, {"type": "labelpara", "label": "Revision", "text": "Return to previous topics."}, {"type": "labelpara", "label": "Planning", "text": "Know what you need to study and when."}, {"type": "labelpara", "label": "Analysis", "text": "Study your previous mistakes."}, {"type": "labelpara", "label": "Consistency", "text": "Avoid leaving everything until examination period."}]}, {"num": 16, "part": "PART TWO", "title": "Marketing Templates \u2014 Why Is My CGPA Not Improving?", "product": "cgpa", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["You're studying, but your CGPA isn't improving. Why?", "More study hours don't always mean better results.", "What if your problem isn't laziness but your study method?", "Your CGPA is giving you feedback. Are you paying attention?", "Stop asking, \u201cHow long did I study?\u201d Ask, \u201cHow effectively did I study?\u201d"]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Is My CGPA Not Improving?", "body": "You attend classes. You read. You complete assignments.\n\nBut your CGPA still isn't where you want it to be.\n\nDon't immediately conclude that you aren't intelligent.\n\nExamine your system.\n\nAsk:\n\n\u2713 Do I revise consistently?\n\u2713 Do I practice questions?\n\u2713 Do I understand difficult topics early?\n\u2713 Do I study actively?\n\u2713 Do I identify my weak subjects?\n\u2713 Do I learn from previous mistakes?\n\nYour goal shouldn't only be to study longer. Study better.\n\nWhy Is My CGPA Not Improving?\n\n[LINK]"}]}, {"num": 17, "part": "PART TWO", "title": "Sales & DM System", "product": "cgpa", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "Your CGPA is not improved simply by wishing for better grades.\n\nYou need a system.\n\nWhy Is My CGPA Not Improving? helps students examine their:\n\n\u2713 Study habits\n\u2713 Time management\n\u2713 Revision\n\u2713 Academic weaknesses\n\u2713 Exam preparation\n\nIt is not a promise of a particular grade. It is a practical guide for improving the process behind your academic performance.\n\nGet it here: [LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cCGPA\u201d for the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "What is your biggest academic challenge right now?\n\nA. Concentration\nB. Understanding topics\nC. Revision\nD. Time management\nE. Exam preparation"}]}, {"num": 18, "part": "PART TWO", "title": "Why Do I Keep Choosing the Wrong People?", "product": "relationship", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "Important relationship decisions should not be treated casually. Instead of focusing on dating trends or encouraging prohibited relationships, this guide focuses on responsible partner selection and healthy marriage."}, {"type": "p", "text": "A person should learn to consider:"}, {"type": "bullets", "items": ["Character", "Values", "Compatibility", "Responsibility", "Communication", "Family considerations", "Expectations", "Boundaries", "Long-term suitability"]}, {"type": "p", "text": "A person can also examine their own decision-making. Ask:"}, {"type": "quotelist", "items": ["What qualities am I attracted to?", "What qualities actually matter for a stable marriage?", "Do I recognize warning signs?", "Do I ignore important differences because of temporary emotions?", "Do my values align with the person I am considering?"]}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "The goal is not to find a \u201cperfect\u201d person. Nobody is perfect. The goal is to make wise, informed and responsible choices. Focus on:"}, {"type": "labelpara", "label": "Character", "text": "How does the person behave?"}, {"type": "labelpara", "label": "Values", "text": "What principles guide their decisions?"}, {"type": "labelpara", "label": "Compatibility", "text": "Can both people realistically build a life together?"}, {"type": "labelpara", "label": "Responsibility", "text": "Can the person take responsibility for their commitments?"}, {"type": "labelpara", "label": "Communication", "text": "Can important issues be discussed respectfully?"}, {"type": "labelpara", "label": "Expectations", "text": "Are both people realistic about marriage and responsibilities?"}, {"type": "labelpara", "label": "Boundaries", "text": "Are decisions being made with dignity and appropriate limits?"}]}, {"num": 19, "part": "PART TWO", "title": "Marketing Templates \u2014 The Relationship Guide", "product": "relationship", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["Different person. Same problem. Have you noticed the pattern?", "Why do you keep making the same mistakes when choosing a life partner?", "Attraction alone does not tell you whether someone is suitable for marriage.", "Are you choosing based on values or only emotions?", "Choosing a spouse requires more than attraction."]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Do I Keep Choosing the Wrong People?", "body": "Sometimes the issue isn't simply the people you meet.\n\nIt may also be the way you evaluate people.\n\nBefore making an important decision about marriage, ask:\n\n\u2022 What values matter most to me?\n\u2022 Does this person's character match what I actually need, not just what I find attractive?\n\u2022 Am I overlooking warning signs because of emotional attachment?\n\u2022 Do we agree on the basics \u2014 responsibility, communication, family expectations and long-term goals?\n\u2022 Am I choosing based on compatibility, or only on how someone makes me feel in the moment?\n\nChoosing a life partner is one of the most important decisions you will ever make. It deserves more than assumption or emotion alone.\n\nWhy Do I Keep Choosing the Wrong People? gives you a practical framework for evaluating character, values and compatibility before marriage.\n\n[LINK]"}]}, {"num": 20, "part": "PART TWO", "title": "Sales & DM System", "product": "relationship", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "If you keep noticing the same pattern in the people you choose, the pattern deserves attention.\n\nWhy Do I Keep Choosing the Wrong People? helps you examine:\n\n\u2713 Character and values\n\u2713 Compatibility\n\u2713 Warning signs\n\u2713 Communication and expectations\n\u2713 Responsible, informed decision-making before marriage\n\nIt is not a shortcut to a perfect partner. It is a guide for making wiser, more informed choices.\n\nGet it here: [LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cCHOOSE\u201d and I'll send you the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "Hi [NAME], thanks for your interest in Why Do I Keep Choosing the Wrong People?\n\nThe guide is designed to help you evaluate character, values and compatibility before making a lifelong commitment.\n\nWhat's the biggest challenge you're facing right now when it comes to choosing a partner?"}]}, {"num": 21, "part": "PART TWO", "title": "Why Am I Still Out of Shape?", "product": "fitness", "blocks": [{"type": "h", "text": "Understanding the Problem"}, {"type": "p", "text": "Physical fitness struggles rarely come from a single cause. Sometimes the problem is a busy schedule. Sometimes it's not knowing where to start. Sometimes motivation is strong for a few days, then disappears."}, {"type": "p", "text": "Someone may join a gym and stop attending within weeks. Another person may try several diets without a clear plan. Another may simply not know which habits actually produce results."}, {"type": "p", "text": "The purpose of this product is not to tell people:"}, {"type": "quote", "text": "\u201cYou are out of shape because you are lazy.\u201d"}, {"type": "p", "text": "That would be too simplistic. The goal is to help people examine their current approach."}, {"type": "p", "text": "Questions to ask:"}, {"type": "bullets", "items": ["Do I have a realistic fitness routine?", "Am I consistent, or do I only exercise occasionally?", "Do I track my progress?", "Do I understand basic nutrition?", "Do I set achievable goals, or do I expect instant results?", "What has stopped me from staying consistent in the past?"]}, {"type": "h", "text": "The Solution"}, {"type": "p", "text": "The solution begins with consistency, not intensity. You do not need a perfect routine on day one. You need a routine you can actually sustain."}, {"type": "p", "text": "The guide can help the reader:"}, {"type": "bullets", "items": ["Understand realistic fitness habits", "Build a simple and sustainable routine", "Track progress without obsession", "Set achievable short-term goals", "Identify what causes past routines to fail", "Stay consistent over time"]}]}, {"num": 22, "part": "PART TWO", "title": "Marketing Templates \u2014 Why Am I Still Out of Shape?", "product": "fitness", "blocks": [{"type": "label", "text": "HOOKS"}, {"type": "quotelist", "items": ["You've started your fitness journey more times than you can count. What's different this time?", "Motivation gets you started. Consistency is what keeps you going.", "Why do most fitness routines fail within the first two weeks?", "Being out of shape isn't always about effort. Sometimes it's about approach.", "What would change if you were consistent for just 30 days?"]}, {"type": "label", "text": "EDUCATIONAL POST"}, {"type": "post", "title": "Why Am I Still Out of Shape?", "body": "You've probably started a fitness routine before. Maybe more than once.\n\nThen somewhere along the way, it stopped.\n\nBefore starting again, ask:\n\n\u2022 Do I have a realistic routine, or an extreme one?\n\u2022 Am I consistent, or only motivated in short bursts?\n\u2022 Do I track my progress?\n\u2022 Do I understand basic nutrition, or am I guessing?\n\u2022 What actually stopped me last time?\n\nYou don't need to be perfect. You need to be consistent.\n\nWhy Am I Still Out of Shape? gives you a practical framework for building sustainable fitness habits.\n\n[LINK]"}]}, {"num": 23, "part": "PART TWO", "title": "Sales & DM System", "product": "fitness", "blocks": [{"type": "label", "text": "SALES POST"}, {"type": "post", "title": null, "body": "Getting in shape isn't only about willpower.\n\nIt's about having a routine you can actually sustain.\n\nWhy Am I Still Out of Shape? helps you examine:\n\n\u2713 Realistic routine-building\n\u2713 Consistency habits\n\u2713 Basic nutrition understanding\n\u2713 Progress tracking\n\u2713 Why past attempts didn't stick\n\nIt is not a promise of a particular body shape or timeline. It is a practical guide for building the habits behind lasting fitness progress.\n\nGet it here: [LINK]"}, {"type": "label", "text": "CTA"}, {"type": "cta", "text": "Send \u201cSHAPE\u201d for the details."}, {"type": "label", "text": "DM"}, {"type": "post", "title": null, "body": "Hi [NAME], thanks for your interest in Why Am I Still Out of Shape?\n\nWhat's your biggest challenge right now:\n\nA. Getting started\nB. Staying consistent\nC. Understanding nutrition\nD. All of the above?\n\nThen continue based on the answer."}]}, {"num": 24, "part": "PART THREE", "title": "The Content System", "blocks": [{"type": "h", "text": "Consistency Beats Creativity"}, {"type": "p", "text": "You do not need a new idea every single day. You need a repeatable system."}, {"type": "p", "text": "Every piece of content you post should fall into one of five categories:"}, {"type": "labelpara", "label": "1. Problem Awareness", "text": "Content that names a problem your audience recognises. This is where your hooks live."}, {"type": "labelpara", "label": "2. Education", "text": "Content that helps the reader understand the problem more deeply, without yet asking for a sale."}, {"type": "labelpara", "label": "3. Proof of Thinking", "text": "Content that demonstrates your understanding of the subject \u2014 frameworks, checklists, step-by-step breakdowns. This builds trust without relying on testimonials you don't have."}, {"type": "labelpara", "label": "4. Product Introduction", "text": "Content that connects the problem and education directly to your product as a relevant next step."}, {"type": "labelpara", "label": "5. Direct Offer", "text": "Content that asks clearly for the sale, with a CTA."}, {"type": "h", "text": "A Simple Weekly Mix"}, {"type": "p", "text": "Use this ratio as a starting point:"}, {"type": "bullets", "items": ["3 parts Problem Awareness / Education", "2 parts Proof of Thinking", "1 part Product Introduction", "1 part Direct Offer"]}, {"type": "p", "text": "This keeps your page useful, not just promotional. People buy from accounts they trust, and trust is built before the sale, not during it."}]}, {"num": 25, "part": "PART THREE", "title": "Copy-and-Paste Hook Bank", "blocks": [{"type": "p", "text": "These hooks are not tied to one product. Use them for any of the six guides by replacing [PROBLEM] or [TOPIC]."}, {"type": "label", "text": "CURIOSITY HOOKS"}, {"type": "quotelist", "items": ["What if the real problem isn't [PROBLEM], but how you've been approaching it?", "Nobody tells you this about [PROBLEM].", "Here's what most people get wrong about [PROBLEM]."]}, {"type": "label", "text": "PAIN-POINT HOOKS"}, {"type": "quotelist", "items": ["If [PROBLEM] keeps repeating, it's worth asking why.", "You've tried to fix [PROBLEM] before. What actually changed?", "[PROBLEM] doesn't go away on its own."]}, {"type": "label", "text": "MYTH-BUSTING HOOKS"}, {"type": "quotelist", "items": ["[PROBLEM] is not only about effort. It's often about system.", "More time, more money or more willpower won't fix [PROBLEM] alone."]}, {"type": "label", "text": "QUESTION HOOKS"}, {"type": "quotelist", "items": ["What would change for you if [PROBLEM] wasn't a struggle anymore?", "How long has [PROBLEM] been repeating in your life?"]}, {"type": "label", "text": "DIRECT HOOKS"}, {"type": "quotelist", "items": ["Struggling with [PROBLEM]? Here's somewhere to start.", "[PROBLEM] has a pattern. Once you see it, it's easier to address."]}, {"type": "p", "text": "Use one hook per post. Follow it immediately with two or three lines of value before mentioning your product."}]}, {"num": 26, "part": "PART THREE", "title": "Universal Sales Templates", "blocks": [{"type": "p", "text": "These templates work across all six products. Replace [PRODUCT], [PROBLEM] and the checklist items to match the guide you are promoting."}, {"type": "label", "text": "TEMPLATE 1 \u2014 THE CHECKLIST SALES POST"}, {"type": "post", "title": null, "body": "If [PROBLEM] keeps showing up in your life, don't only look for a quick fix.\n\n[PRODUCT] helps you examine:\n\n\u2713 [Point 1]\n\u2713 [Point 2]\n\u2713 [Point 3]\n\u2713 [Point 4]\n\u2713 [Point 5]\n\nIt is not a guarantee of a particular outcome. It is a practical guide for improving the process behind [PROBLEM].\n\nGet it here: [LINK]"}, {"type": "label", "text": "TEMPLATE 2 \u2014 THE REFRAME POST"}, {"type": "post", "title": null, "body": "[PROBLEM] isn't only about [common assumption].\n\nSometimes it's about [deeper cause].\n\n[PRODUCT] helps you look at the real pattern behind [PROBLEM], so you can address it directly.\n\n[LINK]"}, {"type": "label", "text": "TEMPLATE 3 \u2014 THE SHORT DIRECT OFFER"}, {"type": "post", "title": null, "body": "[PROBLEM]?\n\n[PRODUCT] is a practical, step-by-step guide to help you work through it.\n\n[LINK]"}, {"type": "p", "text": "Every template ends the same way: a clear, honest description of what the product actually helps with \u2014 never a guarantee of income, grades, relationships or results."}]}, {"num": 27, "part": "PART THREE", "title": "DM & Objection Handling", "blocks": [{"type": "p", "text": "When someone messages you, the goal is a conversation, not a script recited at them."}, {"type": "label", "text": "COMMON OBJECTIONS AND RESPONSES"}, {"type": "labelpara", "label": "\u201cIt's too expensive.\u201d", "text": "I understand. Can I ask what budget you had in mind? I want to make sure I'm not wasting your time or mine."}, {"type": "labelpara", "label": "\u201cWill this actually work for me?\u201d", "text": "That's a fair question. The guide is built around [core method]. It won't do the work for you, but it gives you a clear structure to follow. What's the specific part of [PROBLEM] you're hoping to solve?"}, {"type": "labelpara", "label": "\u201cLet me think about it.\u201d", "text": "No problem at all. Take your time. Can I check back with you in a couple of days, or would you rather I just leave the link with you for now?"}, {"type": "labelpara", "label": "\u201cI don't have money right now.\u201d", "text": "That's completely understandable. I'll leave the details with you, and you can reach out whenever it's convenient."}, {"type": "labelpara", "label": "\u201cDoes it really work?\u201d", "text": "I can't promise a specific result \u2014 that depends on your own effort and circumstances. What I can tell you is exactly what the guide covers, so you can decide if it's the right fit. Want me to walk you through it?"}, {"type": "label", "text": "THE RULE"}, {"type": "p", "text": "Never pressure. Never invent urgency that doesn't exist. Never promise a result you cannot guarantee. Answer honestly, then let the person decide."}]}, {"num": 28, "part": "PART THREE", "title": "Follow-Up System", "blocks": [{"type": "p", "text": "Most sales are lost not because of rejection, but because of silence. A simple, respectful follow-up sequence recovers many of these."}, {"type": "label", "text": "FOLLOW-UP TIMING"}, {"type": "labelpara", "label": "Day 1 (same day or next day)", "text": "Hi [NAME], just checking in \u2014 did you get a chance to look at the details I sent?"}, {"type": "labelpara", "label": "Day 3", "text": "Hi [NAME], no pressure at all. Just wanted to check if you had any questions about [PRODUCT] before you decide."}, {"type": "labelpara", "label": "Day 7", "text": "Hi [NAME], I'll leave this here in case it's still useful to you: [LINK]. Feel free to reach out anytime."}, {"type": "label", "text": "RULES FOR FOLLOW-UP"}, {"type": "bullets", "items": ["Space follow-ups out. Do not message daily.", "Always give the person an easy way to say no.", "Stop following up if someone clearly declines.", "Keep the tone helpful, never pushy."]}]}, {"num": 29, "part": "PART THREE", "title": "Simple Sales Funnel", "blocks": [{"type": "p", "text": "Your sales process does not need to be complicated. It needs to be consistent."}, {"type": "labelpara", "label": "STEP 1 \u2014 AWARENESS", "text": "Post problem-based content (hooks) so the right people notice."}, {"type": "labelpara", "label": "STEP 2 \u2014 CONTENT", "text": "Follow with educational posts that build understanding and trust."}, {"type": "labelpara", "label": "STEP 3 \u2014 ENGAGEMENT", "text": "Reply to comments. Answer questions. Start conversations in your DMs."}, {"type": "labelpara", "label": "STEP 4 \u2014 CONVERSATION", "text": "Move interested people into a direct message using a clear CTA (\u201cSend [WORD] for the details\u201d)."}, {"type": "labelpara", "label": "STEP 5 \u2014 OFFER", "text": "Share the sales post or product link (Selar) with a clear, honest description."}, {"type": "labelpara", "label": "STEP 6 \u2014 FOLLOW-UP", "text": "If there's no response, follow up respectfully using the Day 1 / Day 3 / Day 7 sequence."}, {"type": "labelpara", "label": "STEP 7 \u2014 AFTER THE SALE", "text": "Deliver the product promptly. Be available for genuine questions. Do not fabricate testimonials \u2014 if a buyer chooses to share honest feedback, you may ask permission to use it."}]}, {"num": 30, "part": "PART THREE", "title": "30-Day Marketing Plan", "blocks": [{"type": "p", "text": "This plan cycles through all six products over four weeks, so your page never runs out of direction."}, {"type": "labelpara", "label": "WEEK 1 \u2014 Money & Focus", "text": "Days 1\u20133: Why Am I Always Broke? (hooks, education, sales post)\nDays 4\u20137: Why Can't I Stop Scrolling? (hooks, education, sales post)"}, {"type": "labelpara", "label": "WEEK 2 \u2014 Communication & Academics", "text": "Days 8\u201310: Why Can't I Speak Well?\nDays 11\u201314: Why Is My CGPA Not Improving?"}, {"type": "labelpara", "label": "WEEK 3 \u2014 Relationships & Fitness", "text": "Days 15\u201318: Why Do I Keep Choosing the Wrong People?\nDays 19\u201321: Why Am I Still Out of Shape?"}, {"type": "labelpara", "label": "WEEK 4 \u2014 Reinforce & Convert", "text": "Days 22\u201325: Repost your strongest-performing content from Weeks 1\u20133 with a new hook.\nDays 26\u201328: Universal sales templates and direct offers across all six products.\nDays 29\u201330: Review results, follow up with unconverted leads, and plan the next 30 days."}, {"type": "p", "text": "Each day: 1 piece of content minimum. Respond to every comment and DM the same day where possible."}]}, {"num": 31, "part": "PART THREE", "title": "Daily & Weekly Checklists", "blocks": [{"type": "label", "text": "DAILY CHECKLIST"}, {"type": "checklist", "items": ["Post one piece of content (hook, education, proof or offer)", "Reply to all comments", "Respond to all DMs", "Follow up with at least one warm lead", "Note anything that performed well"]}, {"type": "label", "text": "WEEKLY CHECKLIST"}, {"type": "checklist", "items": ["Review which posts got the most engagement", "Review which posts led to DMs or sales", "Follow up with leads who haven't responded in 3+ days", "Plan next week's content using the 30-Day Marketing Plan", "Update or refine templates that underperformed"]}]}, {"num": 32, "part": "PART THREE", "title": "Final Action Plan", "blocks": [{"type": "h", "text": "You Don't Need a New Strategy. You Need to Start."}, {"type": "p", "text": "Everything in this playbook is built to remove the question:"}, {"type": "quote", "text": "\u201cWhat should I post today?\u201d"}, {"type": "p", "text": "You now have:"}, {"type": "bullets", "items": ["Six problem-based products", "Hooks, educational posts and sales posts for each", "A universal hook bank and sales templates", "A DM and objection-handling system", "A follow-up sequence", "A simple sales funnel", "A 30-day plan to guide your content"]}, {"type": "p", "text": "The system works when it is used consistently, honestly, and with genuine care for the person on the other side of the conversation."}, {"type": "p", "text": "Start with one product. Post today. Reply to whoever responds. Follow up. Repeat tomorrow."}, {"type": "quote", "text": "That is the entire system."}]}]}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('playbook-data').textContent);
+const PAGES = DATA.pages;
+let currentIndex = 0;
+
+const PART_LABELS = {
+  "PART ONE": "Part One · The System",
+  "PART TWO": "Part Two · The Six Problem-Based Products",
+  "PART THREE": "Part Three · The Marketing Engine"
+};
+
+function escapeHtml(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ---------- Sidebar / TOC ----------
+function buildToc(){
+  const nav = document.getElementById('tocNav');
+  nav.innerHTML = '';
+  DATA.toc.forEach(part => {
+    const group = document.createElement('div');
+    group.className = 'part-group';
+    const label = document.createElement('div');
+    label.className = 'part-title';
+    label.textContent = part.part;
+    group.appendChild(label);
+    part.entries.forEach(entry => {
+      const idx = PAGES.findIndex(p => p.num === entry.page);
+      const btn = document.createElement('button');
+      btn.className = 'toc-item';
+      btn.dataset.index = idx;
+      btn.innerHTML = `<span class="toc-num">${String(entry.page).padStart(2,'0')}</span><span>${entry.title}</span>`;
+      btn.addEventListener('click', () => { goTo(idx); closeSidebarMobile(); });
+      group.appendChild(btn);
+    });
+    nav.appendChild(group);
+  });
+}
+
+function updateTocActive(){
+  document.querySelectorAll('.toc-item').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.index) === currentIndex);
+  });
+}
+
+// ---------- Copy helpers ----------
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg || 'Copied to clipboard';
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 1700);
+}
+
+function copyText(text, btnEl){
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard');
+    if(btnEl){
+      const original = btnEl.textContent;
+      btnEl.textContent = 'Copied';
+      btnEl.classList.add('copied');
+      setTimeout(() => { btnEl.textContent = original; btnEl.classList.remove('copied'); }, 1400);
+    }
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Copied to clipboard');
+  });
+}
+
+// ---------- Page rendering ----------
+function collectPageText(page){
+  // Builds a plain-text version of the whole page for "Copy full page"
+  let lines = [];
+  lines.push(page.title.toUpperCase());
+  page.blocks.forEach(b => {
+    if(b.type === 'h') lines.push('\n' + b.text);
+    else if(b.type === 'p') lines.push(b.text);
+    else if(b.type === 'quote') lines.push(b.text);
+    else if(b.type === 'quotelist') b.items.forEach(i => lines.push(i));
+    else if(b.type === 'bullets') b.items.forEach(i => lines.push('• ' + i));
+    else if(b.type === 'checklist') b.items.forEach(i => lines.push('☐ ' + i));
+    else if(b.type === 'numbered') b.items.forEach((i,n) => lines.push((n+1)+'. '+i));
+    else if(b.type === 'stage') lines.push(b.label + ': ' + b.text);
+    else if(b.type === 'flow') lines.push(b.text);
+    else if(b.type === 'labelpara') lines.push(b.label + ' — ' + b.text);
+    else if(b.type === 'label') lines.push('\n[' + b.text + ']');
+    else if(b.type === 'cta') lines.push(b.text);
+    else if(b.type === 'post') { if(b.title) lines.push(b.title); lines.push(b.body); }
+  });
+  return lines.join('\n');
+}
+
+function renderBlock(block){
+  switch(block.type){
+    case 'h':
+      return `<div class="block-h">${escapeHtml(block.text)}</div>`;
+    case 'p':
+      return `<p class="block-p">${escapeHtml(block.text)}</p>`;
+    case 'quote':
+      return renderCopyQuote(block.text);
+    case 'quotelist':
+      return block.items.map(renderCopyQuote).join('');
+    case 'bullets':
+      return `<ul class="block-list">${block.items.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
+    case 'checklist':
+      return `<ul class="checklist">${block.items.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
+    case 'numbered':
+      return `<ol class="block-list">${block.items.map(i=>`<li>${escapeHtml(i)}</li>`).join('')}</ol>`;
+    case 'stage':
+      return `<div class="stage"><div class="stage-label">${escapeHtml(block.label)}</div><div class="stage-text">${escapeHtml(block.text)}</div></div>`;
+    case 'flow':
+      return `<div class="block-flow">${escapeHtml(block.text)}</div>`;
+    case 'labelpara':
+      return `<div class="labelpara"><div class="labelpara-label">${escapeHtml(block.label)}</div><div class="labelpara-text">${escapeHtml(block.text)}</div></div>`;
+    case 'label':
+      return `<div class="section-label">${escapeHtml(block.text)}</div>`;
+    case 'cta':
+      return renderCopyCta(block.text);
+    case 'post':
+      return renderCopyPost(block.title, block.body);
+    default:
+      return '';
+  }
+}
+
+let copyCounter = 0;
+function renderCopyQuote(text){
+  copyCounter++;
+  const encoded = encodeURIComponent(text);
+  return `<div class="copy-block"><div class="quote-row">
+    <div class="quote-line">${escapeHtml(text)}</div>
+    <button class="copy-btn" data-copy="${encoded}">Copy</button>
+  </div></div>`;
+}
+function renderCopyCta(text){
+  copyCounter++;
+  const encoded = encodeURIComponent(text);
+  return `<div class="copy-block"><div class="quote-row">
+    <div class="cta-text">${escapeHtml(text)}</div>
+    <button class="copy-btn" data-copy="${encoded}">Copy</button>
+  </div></div>`;
+}
+function renderCopyPost(title, body){
+  const full = (title ? title + '\n\n' : '') + body;
+  const encoded = encodeURIComponent(full);
+  return `<div class="copy-block">
+    <button class="copy-btn copy-block-inline-btn" data-copy="${encoded}">Copy</button>
+    ${title ? `<div class="post-title">${escapeHtml(title)}</div>` : ''}
+    <div class="post-body">${escapeHtml(body)}</div>
+  </div>`;
+}
+
+function renderPage(index){
+  const page = PAGES[index];
+  const wrap = document.getElementById('pageWrap');
+  const partLabel = PART_LABELS[page.part] || page.part;
+
+  let html = '';
+  html += `<div class="page-header">
+      <div class="page-eyebrow">${partLabel} · Page ${String(page.num).padStart(2,'0')}</div>
+      <div class="page-title">${escapeHtml(page.title)}</div>
+    </div>
+    <div class="gold-rule"></div>
+    <div class="copy-all-row">
+      <button class="copy-page-btn" id="copyPageBtn">Copy full page</button>
+    </div>`;
+
+  page.blocks.forEach(b => { html += renderBlock(b); });
+
+  wrap.innerHTML = html;
+
+  document.getElementById('copyPageBtn').addEventListener('click', (e) => {
+    copyText(collectPageText(page), null);
+    e.target.textContent = 'Copied';
+    e.target.classList.add('copied');
+    setTimeout(() => { e.target.textContent = 'Copy full page'; e.target.classList.remove('copied'); }, 1400);
+  });
+
+  wrap.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      copyText(decodeURIComponent(btn.dataset.copy), btn);
+    });
+  });
+
+  document.getElementById('breadcrumb').innerHTML = `<b>${partLabel}</b> &nbsp;/&nbsp; ${escapeHtml(page.title)}`;
+  document.getElementById('prevBtn').disabled = index === 0;
+  document.getElementById('nextBtn').disabled = index === PAGES.length - 1;
+  updateTocActive();
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+function goTo(index){
+  if(index < 0 || index >= PAGES.length) return;
+  currentIndex = index;
+  renderPage(currentIndex);
+  history.replaceState(null, '', '#page-' + PAGES[currentIndex].num);
+}
+
+// ---------- Mobile sidebar ----------
+function openSidebarMobile(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeSidebarMobile(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ---------- Init ----------
+document.getElementById('prevBtn').addEventListener('click', () => goTo(currentIndex - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(currentIndex + 1));
+document.getElementById('menuBtn').addEventListener('click', openSidebarMobile);
+document.getElementById('overlay').addEventListener('click', closeSidebarMobile);
+
+buildToc();
+
+let startIndex = 0;
+if(location.hash && location.hash.startsWith('#page-')){
+  const num = parseInt(location.hash.replace('#page-',''), 10);
+  const found = PAGES.findIndex(p => p.num === num);
+  if(found >= 0) startIndex = found;
+}
+goTo(startIndex);
+</script>
+</body>
+</html>
